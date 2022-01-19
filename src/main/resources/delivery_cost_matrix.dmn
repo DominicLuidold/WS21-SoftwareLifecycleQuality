@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions xmlns="https://www.omg.org/spec/DMN/20191111/MODEL/" xmlns:dmndi="https://www.omg.org/spec/DMN/20191111/DMNDI/" xmlns:dc="http://www.omg.org/spec/DMN/20180521/DC/" xmlns:biodi="http://bpmn.io/schema/dmn/biodi/2.0" id="Definitions_0nvz245" name="DRD" namespace="http://camunda.org/schema/1.0/dmn" exporter="Camunda Modeler" exporterVersion="4.11.1">
+  <decision id="delivery_cost_matrix" name="Delivery Cost Matrix">
+    <decisionTable id="DecisionTable_1cxm0eu" hitPolicy="FIRST">
+      <input id="Input_1" label="Book Count" biodi:width="193">
+        <inputExpression id="InputExpression_1" typeRef="integer">
+          <text>bookCount</text>
+        </inputExpression>
+      </input>
+      <output id="Output_1" label="Delivery Cost" name="deliveryCost" typeRef="integer" />
+      <rule id="DecisionRule_1cydfcp">
+        <inputEntry id="UnaryTests_1lmc1kl">
+          <text>[1..3]</text>
+        </inputEntry>
+        <outputEntry id="LiteralExpression_1t0we9u">
+          <text>7</text>
+        </outputEntry>
+      </rule>
+      <rule id="DecisionRule_1wyls7l">
+        <inputEntry id="UnaryTests_1pzd9rs">
+          <text>[4..7]</text>
+        </inputEntry>
+        <outputEntry id="LiteralExpression_0xxj5qc">
+          <text>11</text>
+        </outputEntry>
+      </rule>
+      <rule id="DecisionRule_0f8od4f">
+        <inputEntry id="UnaryTests_0xlbfps">
+          <text>&gt; 7</text>
+        </inputEntry>
+        <outputEntry id="LiteralExpression_189iriv">
+          <text>15</text>
+        </outputEntry>
+      </rule>
+    </decisionTable>
+  </decision>
+  <dmndi:DMNDI>
+    <dmndi:DMNDiagram>
+      <dmndi:DMNShape dmnElementRef="delivery_cost_matrix">
+        <dc:Bounds height="80" width="180" x="160" y="100" />
+      </dmndi:DMNShape>
+    </dmndi:DMNDiagram>
+  </dmndi:DMNDI>
+</definitions>
