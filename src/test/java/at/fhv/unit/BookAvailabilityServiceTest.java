@@ -1,5 +1,6 @@
-package at.fhv;
+package at.fhv.unit;
 
+import at.fhv.BookAvailabilityService;
 import org.camunda.bpm.engine.delegate.DelegateExecution;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

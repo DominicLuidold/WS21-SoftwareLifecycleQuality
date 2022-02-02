@@ -13,7 +13,7 @@
         <bpmn:flowNodeRef>Activity_Browse_Books</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>Activity_Delivery_Cost_Lookup_Table</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>Activity_Count_Books</bpmn:flowNodeRef>
-        <bpmn:flowNodeRef>Activity_0nzrn69</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Activity_Decide_To_Enter_Credentials_Again</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>Gateway_1qkyvgw</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>Gateway_1ip0j9h</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>Gateway_Order_Accept</bpmn:flowNodeRef>
@@ -54,7 +54,7 @@
       <bpmn:outgoing>Flow_0w4ztxt</bpmn:outgoing>
     </bpmn:exclusiveGateway>
     <bpmn:sequenceFlow id="Flow_1jzll3b" sourceRef="Activity_Check_Login_Credentials" targetRef="Gateway_Credentials_Correct" />
-    <bpmn:sequenceFlow id="Flow_1h40b9w" name="no" sourceRef="Gateway_Credentials_Correct" targetRef="Activity_0nzrn69">
+    <bpmn:sequenceFlow id="Flow_1h40b9w" name="no" sourceRef="Gateway_Credentials_Correct" targetRef="Activity_Decide_To_Enter_Credentials_Again">
       <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${not credentialsCorrect}</bpmn:conditionExpression>
     </bpmn:sequenceFlow>
     <bpmn:sequenceFlow id="Flow_0w4ztxt" name="yes" sourceRef="Gateway_Credentials_Correct" targetRef="Activity_Browse_Books">
@@ -79,7 +79,7 @@
       <bpmn:incoming>Flow_0ggfcon</bpmn:incoming>
       <bpmn:outgoing>Flow_1qxpb82</bpmn:outgoing>
     </bpmn:serviceTask>
-    <bpmn:userTask id="Activity_0nzrn69" name="Decide to enter login credentials again">
+    <bpmn:userTask id="Activity_Decide_To_Enter_Credentials_Again" name="Decide to enter login credentials again">
       <bpmn:extensionElements>
         <camunda:formData>
           <camunda:formField id="proceed" label="Credentials were incorrect! Try again?" type="boolean" />
@@ -88,7 +88,7 @@
       <bpmn:incoming>Flow_1h40b9w</bpmn:incoming>
       <bpmn:outgoing>Flow_0tvoly2</bpmn:outgoing>
     </bpmn:userTask>
-    <bpmn:sequenceFlow id="Flow_0tvoly2" sourceRef="Activity_0nzrn69" targetRef="Gateway_1qkyvgw" />
+    <bpmn:sequenceFlow id="Flow_0tvoly2" sourceRef="Activity_Decide_To_Enter_Credentials_Again" targetRef="Gateway_1qkyvgw" />
     <bpmn:sequenceFlow id="Flow_1of3gi7" name="yes" sourceRef="Gateway_1qkyvgw" targetRef="Activity_Enter_Login_Credentials">
       <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${proceed}</bpmn:conditionExpression>
     </bpmn:sequenceFlow>
@@ -328,7 +328,7 @@
       <bpmndi:BPMNShape id="Activity_0hgpfwr_di" bpmnElement="Activity_Count_Books">
         <dc:Bounds x="1060" y="150" width="100" height="80" />
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Activity_13mbeeo_di" bpmnElement="Activity_0nzrn69">
+      <bpmndi:BPMNShape id="Activity_13mbeeo_di" bpmnElement="Activity_Decide_To_Enter_Credentials_Again">
         <dc:Bounds x="520" y="270" width="100" height="80" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Gateway_1qkyvgw_di" bpmnElement="Gateway_1qkyvgw" isMarkerVisible="true">

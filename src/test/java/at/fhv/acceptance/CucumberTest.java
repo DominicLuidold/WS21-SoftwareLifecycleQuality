@@ -1,4 +1,4 @@
-package at.fhv.cucumber;
+package at.fhv.acceptance;
 
 import org.junit.runner.RunWith;
 import io.cucumber.junit.Cucumber;
