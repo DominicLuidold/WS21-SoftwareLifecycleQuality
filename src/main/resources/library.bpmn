@@ -11,14 +11,14 @@
         <bpmn:flowNodeRef>Activity_Check_Login_Credentials</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>Gateway_1g74ajx</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>Activity_Browse_Books</bpmn:flowNodeRef>
-        <bpmn:flowNodeRef>Gateway_1kvsg31</bpmn:flowNodeRef>
-        <bpmn:flowNodeRef>Lending_Books_Ended</bpmn:flowNodeRef>
-        <bpmn:flowNodeRef>Activity_Accept_Decline_Order</bpmn:flowNodeRef>
-        <bpmn:flowNodeRef>Activity_Calculate_Delivery_Cost</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Activity_Delivery_Cost_Lookup_Table</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>Activity_Count_Books</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>Activity_0nzrn69</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>Gateway_1qkyvgw</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>Gateway_1ip0j9h</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Gateway_1kvsg31</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Lending_Books_Ended</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Activity_Accept_Decline_Order</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>Activity_1y1jvss</bpmn:flowNodeRef>
       </bpmn:lane>
       <bpmn:lane id="Lane_0e60trg" name="Library employee">
@@ -61,62 +61,24 @@
       <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${credentialsCorrect}</bpmn:conditionExpression>
     </bpmn:sequenceFlow>
     <bpmn:callActivity id="Activity_Browse_Books" name="Browse books" calledElement="browse_books">
+      <bpmn:extensionElements>
+        <camunda:out source="booksInCart" target="booksInCart" />
+      </bpmn:extensionElements>
       <bpmn:incoming>Flow_0w4ztxt</bpmn:incoming>
       <bpmn:incoming>Flow_1m9fiz3</bpmn:incoming>
       <bpmn:outgoing>Flow_0ggfcon</bpmn:outgoing>
     </bpmn:callActivity>
-    <bpmn:sequenceFlow id="Flow_1b0gvxl" name="no" sourceRef="Gateway_1kvsg31" targetRef="Activity_1y1jvss">
-      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${not orderAccepted}</bpmn:conditionExpression>
-    </bpmn:sequenceFlow>
-    <bpmn:exclusiveGateway id="Gateway_1kvsg31" name="Order accepted?">
-      <bpmn:incoming>Flow_0eykz1w</bpmn:incoming>
-      <bpmn:outgoing>Flow_0swc87x</bpmn:outgoing>
-      <bpmn:outgoing>Flow_1b0gvxl</bpmn:outgoing>
-    </bpmn:exclusiveGateway>
-    <bpmn:endEvent id="Lending_Books_Ended" name="Lending process ended">
-      <bpmn:incoming>Flow_0i2deq3</bpmn:incoming>
-      <bpmn:incoming>Flow_1awej44</bpmn:incoming>
-      <bpmn:incoming>Flow_0b9hisd</bpmn:incoming>
-    </bpmn:endEvent>
-    <bpmn:sequenceFlow id="Flow_0dz7c15" sourceRef="Activity_Calculate_Delivery_Cost" targetRef="Activity_Accept_Decline_Order" />
-    <bpmn:sequenceFlow id="Flow_0eykz1w" sourceRef="Activity_Accept_Decline_Order" targetRef="Gateway_1kvsg31" />
-    <bpmn:sequenceFlow id="Flow_0swc87x" name="yes" sourceRef="Gateway_1kvsg31" targetRef="Activity_Print_Shipping_Label">
-      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${orderAccepted}</bpmn:conditionExpression>
-    </bpmn:sequenceFlow>
-    <bpmn:sequenceFlow id="Flow_0i2deq3" sourceRef="Activity_Ship_Books" targetRef="Lending_Books_Ended" />
+    <bpmn:sequenceFlow id="Flow_0dz7c15" sourceRef="Activity_Delivery_Cost_Lookup_Table" targetRef="Activity_Accept_Decline_Order" />
     <bpmn:sequenceFlow id="Flow_0ggfcon" sourceRef="Activity_Browse_Books" targetRef="Activity_Count_Books" />
-    <bpmn:sequenceFlow id="Flow_1qxpb82" sourceRef="Activity_Count_Books" targetRef="Activity_Calculate_Delivery_Cost" />
-    <bpmn:userTask id="Activity_Accept_Decline_Order" name="Accept/Decline order">
-      <bpmn:incoming>Flow_0dz7c15</bpmn:incoming>
-      <bpmn:outgoing>Flow_0eykz1w</bpmn:outgoing>
-    </bpmn:userTask>
-    <bpmn:businessRuleTask id="Activity_Calculate_Delivery_Cost" name="Calculate delivery cost" camunda:resultVariable="deliveryCost" camunda:decisionRef="delivery_cost_matrix" camunda:mapDecisionResult="singleEntry">
+    <bpmn:sequenceFlow id="Flow_1qxpb82" sourceRef="Activity_Count_Books" targetRef="Activity_Delivery_Cost_Lookup_Table" />
+    <bpmn:businessRuleTask id="Activity_Delivery_Cost_Lookup_Table" name="Delivery Cost Lookup Table" camunda:resultVariable="deliveryCost" camunda:decisionRef="delivery_cost_matrix" camunda:mapDecisionResult="singleEntry">
       <bpmn:incoming>Flow_1qxpb82</bpmn:incoming>
       <bpmn:outgoing>Flow_0dz7c15</bpmn:outgoing>
     </bpmn:businessRuleTask>
-    <bpmn:serviceTask id="Activity_Count_Books" name="Count book amount" camunda:class="at.fhv.BookService">
+    <bpmn:serviceTask id="Activity_Count_Books" name="Count book amount" camunda:class="at.fhv.CountService">
       <bpmn:incoming>Flow_0ggfcon</bpmn:incoming>
       <bpmn:outgoing>Flow_1qxpb82</bpmn:outgoing>
     </bpmn:serviceTask>
-    <bpmn:manualTask id="Activity_Collect_Books" name="Collect selected books">
-      <bpmn:incoming>Flow_1o4nant</bpmn:incoming>
-      <bpmn:outgoing>Flow_19w3oo6</bpmn:outgoing>
-    </bpmn:manualTask>
-    <bpmn:manualTask id="Activity_Ship_Books" name="Ship books">
-      <bpmn:incoming>Flow_114vmng</bpmn:incoming>
-      <bpmn:outgoing>Flow_0i2deq3</bpmn:outgoing>
-    </bpmn:manualTask>
-    <bpmn:serviceTask id="Activity_Print_Shipping_Label" name="Print shipping label" camunda:class="at.fhv.ShippingService">
-      <bpmn:incoming>Flow_0swc87x</bpmn:incoming>
-      <bpmn:outgoing>Flow_1o4nant</bpmn:outgoing>
-    </bpmn:serviceTask>
-    <bpmn:manualTask id="Activity_Package_Books" name="Package books">
-      <bpmn:incoming>Flow_19w3oo6</bpmn:incoming>
-      <bpmn:outgoing>Flow_114vmng</bpmn:outgoing>
-    </bpmn:manualTask>
-    <bpmn:sequenceFlow id="Flow_1o4nant" sourceRef="Activity_Print_Shipping_Label" targetRef="Activity_Collect_Books" />
-    <bpmn:sequenceFlow id="Flow_19w3oo6" sourceRef="Activity_Collect_Books" targetRef="Activity_Package_Books" />
-    <bpmn:sequenceFlow id="Flow_114vmng" sourceRef="Activity_Package_Books" targetRef="Activity_Ship_Books" />
     <bpmn:userTask id="Activity_0nzrn69" name="Decide to enter login credentials again">
       <bpmn:extensionElements>
         <camunda:formData>
@@ -145,34 +107,86 @@
       <bpmn:outgoing>Flow_0b9hisd</bpmn:outgoing>
     </bpmn:exclusiveGateway>
     <bpmn:sequenceFlow id="Flow_1m9fiz3" name="yes" sourceRef="Gateway_1ip0j9h" targetRef="Activity_Browse_Books">
-      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${proceed}</bpmn:conditionExpression>
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${browseAgain}</bpmn:conditionExpression>
     </bpmn:sequenceFlow>
     <bpmn:sequenceFlow id="Flow_0b9hisd" name="no" sourceRef="Gateway_1ip0j9h" targetRef="Lending_Books_Ended">
-      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${not proceed}</bpmn:conditionExpression>
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${not browseAgain}</bpmn:conditionExpression>
     </bpmn:sequenceFlow>
+    <bpmn:exclusiveGateway id="Gateway_1kvsg31" name="Order accepted?">
+      <bpmn:incoming>Flow_0eykz1w</bpmn:incoming>
+      <bpmn:outgoing>Flow_0swc87x</bpmn:outgoing>
+      <bpmn:outgoing>Flow_1b0gvxl</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:endEvent id="Lending_Books_Ended" name="Lending process ended">
+      <bpmn:incoming>Flow_0i2deq3</bpmn:incoming>
+      <bpmn:incoming>Flow_1awej44</bpmn:incoming>
+      <bpmn:incoming>Flow_0b9hisd</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:userTask id="Activity_Accept_Decline_Order" name="Accept/Decline order">
+      <bpmn:extensionElements>
+        <camunda:formData>
+          <camunda:formField id="deliveryCost" label="Total amount of delivery cost" type="long" />
+          <camunda:formField id="orderAccepted" label="Accept order with delivery cost?" type="boolean" />
+        </camunda:formData>
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_0dz7c15</bpmn:incoming>
+      <bpmn:outgoing>Flow_0eykz1w</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:manualTask id="Activity_Collect_Books" name="Collect selected books">
+      <bpmn:incoming>Flow_1o4nant</bpmn:incoming>
+      <bpmn:outgoing>Flow_19w3oo6</bpmn:outgoing>
+    </bpmn:manualTask>
+    <bpmn:manualTask id="Activity_Ship_Books" name="Ship books">
+      <bpmn:incoming>Flow_114vmng</bpmn:incoming>
+      <bpmn:outgoing>Flow_0i2deq3</bpmn:outgoing>
+    </bpmn:manualTask>
+    <bpmn:serviceTask id="Activity_Print_Shipping_Label" name="Print shipping label" camunda:class="at.fhv.ShippingService">
+      <bpmn:incoming>Flow_0swc87x</bpmn:incoming>
+      <bpmn:outgoing>Flow_1o4nant</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:manualTask id="Activity_Package_Books" name="Package books">
+      <bpmn:incoming>Flow_19w3oo6</bpmn:incoming>
+      <bpmn:outgoing>Flow_114vmng</bpmn:outgoing>
+    </bpmn:manualTask>
     <bpmn:userTask id="Activity_1y1jvss" name="Decide to browse books again">
+      <bpmn:extensionElements>
+        <camunda:formData>
+          <camunda:formField id="browseAgain" label="Browse books again?" type="boolean" />
+        </camunda:formData>
+      </bpmn:extensionElements>
       <bpmn:incoming>Flow_1b0gvxl</bpmn:incoming>
       <bpmn:outgoing>Flow_13nhsgx</bpmn:outgoing>
     </bpmn:userTask>
+    <bpmn:sequenceFlow id="Flow_0eykz1w" sourceRef="Activity_Accept_Decline_Order" targetRef="Gateway_1kvsg31" />
+    <bpmn:sequenceFlow id="Flow_1b0gvxl" name="no" sourceRef="Gateway_1kvsg31" targetRef="Activity_1y1jvss">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${not orderAccepted}</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="Flow_0swc87x" name="yes" sourceRef="Gateway_1kvsg31" targetRef="Activity_Print_Shipping_Label">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${orderAccepted}</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="Flow_0i2deq3" sourceRef="Activity_Ship_Books" targetRef="Lending_Books_Ended" />
+    <bpmn:sequenceFlow id="Flow_1o4nant" sourceRef="Activity_Print_Shipping_Label" targetRef="Activity_Collect_Books" />
+    <bpmn:sequenceFlow id="Flow_19w3oo6" sourceRef="Activity_Collect_Books" targetRef="Activity_Package_Books" />
+    <bpmn:sequenceFlow id="Flow_114vmng" sourceRef="Activity_Package_Books" targetRef="Activity_Ship_Books" />
   </bpmn:process>
   <bpmndi:BPMNDiagram id="BPMNDiagram_1">
     <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="Library">
       <bpmndi:BPMNShape id="Participant_0j5w4wd_di" bpmnElement="Participant_0j5w4wd" isHorizontal="true">
-        <dc:Bounds x="129" y="110" width="2481" height="430" />
+        <dc:Bounds x="129" y="110" width="2471" height="430" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Lane_0e60trg_di" bpmnElement="Lane_0e60trg" isHorizontal="true">
-        <dc:Bounds x="159" y="390" width="2451" height="150" />
+        <dc:Bounds x="159" y="390" width="2441" height="150" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Lane_04rf0z1_di" bpmnElement="Lane_04rf0z1" isHorizontal="true">
-        <dc:Bounds x="159" y="110" width="2451" height="280" />
+        <dc:Bounds x="159" y="110" width="2441" height="280" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNEdge id="Flow_0b9hisd_di" bpmnElement="Flow_0b9hisd">
         <di:waypoint x="1300" y="325" />
         <di:waypoint x="1300" y="350" />
         <di:waypoint x="2330" y="350" />
         <di:waypoint x="2330" y="150" />
-        <di:waypoint x="2460" y="150" />
-        <di:waypoint x="2460" y="170" />
+        <di:waypoint x="2450" y="150" />
+        <di:waypoint x="2450" y="172" />
         <bpmndi:BPMNLabel>
           <dc:Bounds x="1313" y="333" width="13" height="14" />
         </bpmndi:BPMNLabel>
@@ -186,7 +200,7 @@
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_13nhsgx_di" bpmnElement="Flow_13nhsgx">
-        <di:waypoint x="1450" y="300" />
+        <di:waypoint x="1440" y="300" />
         <di:waypoint x="1325" y="300" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_1awej44_di" bpmnElement="Flow_1awej44">
@@ -194,7 +208,7 @@
         <di:waypoint x="380" y="370" />
         <di:waypoint x="2350" y="370" />
         <di:waypoint x="2350" y="190" />
-        <di:waypoint x="2440" y="190" />
+        <di:waypoint x="2432" y="190" />
         <bpmndi:BPMNLabel>
           <dc:Bounds x="393" y="352" width="13" height="14" />
         </bpmndi:BPMNLabel>
@@ -210,18 +224,6 @@
         <di:waypoint x="520" y="310" />
         <di:waypoint x="405" y="310" />
       </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Flow_114vmng_di" bpmnElement="Flow_114vmng">
-        <di:waypoint x="2190" y="460" />
-        <di:waypoint x="2250" y="460" />
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Flow_19w3oo6_di" bpmnElement="Flow_19w3oo6">
-        <di:waypoint x="2030" y="460" />
-        <di:waypoint x="2090" y="460" />
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Flow_1o4nant_di" bpmnElement="Flow_1o4nant">
-        <di:waypoint x="1870" y="460" />
-        <di:waypoint x="1930" y="460" />
-      </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_1qxpb82_di" bpmnElement="Flow_1qxpb82">
         <di:waypoint x="1160" y="190" />
         <di:waypoint x="1250" y="190" />
@@ -230,35 +232,9 @@
         <di:waypoint x="960" y="190" />
         <di:waypoint x="1060" y="190" />
       </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Flow_0i2deq3_di" bpmnElement="Flow_0i2deq3">
-        <di:waypoint x="2350" y="460" />
-        <di:waypoint x="2460" y="460" />
-        <di:waypoint x="2460" y="208" />
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Flow_0swc87x_di" bpmnElement="Flow_0swc87x">
-        <di:waypoint x="1695" y="190" />
-        <di:waypoint x="1720" y="190" />
-        <di:waypoint x="1720" y="460" />
-        <di:waypoint x="1770" y="460" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="1701" y="172" width="17" height="14" />
-        </bpmndi:BPMNLabel>
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Flow_0eykz1w_di" bpmnElement="Flow_0eykz1w">
-        <di:waypoint x="1550" y="190" />
-        <di:waypoint x="1645" y="190" />
-      </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_0dz7c15_di" bpmnElement="Flow_0dz7c15">
         <di:waypoint x="1350" y="190" />
-        <di:waypoint x="1450" y="190" />
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Flow_1b0gvxl_di" bpmnElement="Flow_1b0gvxl">
-        <di:waypoint x="1670" y="215" />
-        <di:waypoint x="1670" y="300" />
-        <di:waypoint x="1550" y="300" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="1683" y="221" width="13" height="14" />
-        </bpmndi:BPMNLabel>
+        <di:waypoint x="1440" y="190" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_0w4ztxt_di" bpmnElement="Flow_0w4ztxt">
         <di:waypoint x="765" y="190" />
@@ -287,6 +263,44 @@
         <di:waypoint x="248" y="190" />
         <di:waypoint x="330" y="190" />
       </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0eykz1w_di" bpmnElement="Flow_0eykz1w">
+        <di:waypoint x="1540" y="190" />
+        <di:waypoint x="1635" y="190" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1b0gvxl_di" bpmnElement="Flow_1b0gvxl">
+        <di:waypoint x="1660" y="215" />
+        <di:waypoint x="1660" y="300" />
+        <di:waypoint x="1540" y="300" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1673" y="221" width="13" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0swc87x_di" bpmnElement="Flow_0swc87x">
+        <di:waypoint x="1685" y="190" />
+        <di:waypoint x="1710" y="190" />
+        <di:waypoint x="1710" y="460" />
+        <di:waypoint x="1760" y="460" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1691" y="172" width="17" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0i2deq3_di" bpmnElement="Flow_0i2deq3">
+        <di:waypoint x="2340" y="460" />
+        <di:waypoint x="2450" y="460" />
+        <di:waypoint x="2450" y="208" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1o4nant_di" bpmnElement="Flow_1o4nant">
+        <di:waypoint x="1860" y="460" />
+        <di:waypoint x="1920" y="460" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_19w3oo6_di" bpmnElement="Flow_19w3oo6">
+        <di:waypoint x="2020" y="460" />
+        <di:waypoint x="2080" y="460" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_114vmng_di" bpmnElement="Flow_114vmng">
+        <di:waypoint x="2180" y="460" />
+        <di:waypoint x="2240" y="460" />
+      </bpmndi:BPMNEdge>
       <bpmndi:BPMNShape id="_BPMNShape_StartEvent_2" bpmnElement="Lending_Books_Started">
         <dc:Bounds x="212" y="172" width="36" height="36" />
         <bpmndi:BPMNLabel>
@@ -308,38 +322,11 @@
       <bpmndi:BPMNShape id="Activity_1gf1ojw_di" bpmnElement="Activity_Browse_Books">
         <dc:Bounds x="860" y="150" width="100" height="80" />
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Gateway_1kvsg31_di" bpmnElement="Gateway_1kvsg31" isMarkerVisible="true">
-        <dc:Bounds x="1645" y="165" width="50" height="50" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="1629" y="143" width="82" height="14" />
-        </bpmndi:BPMNLabel>
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Event_1nrqagt_di" bpmnElement="Lending_Books_Ended">
-        <dc:Bounds x="2442" y="172" width="36" height="36" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="2489" y="176" width="82" height="27" />
-        </bpmndi:BPMNLabel>
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Activity_0ld3nau_di" bpmnElement="Activity_Accept_Decline_Order">
-        <dc:Bounds x="1450" y="150" width="100" height="80" />
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Activity_0wgp5wm_di" bpmnElement="Activity_Calculate_Delivery_Cost">
+      <bpmndi:BPMNShape id="Activity_0wgp5wm_di" bpmnElement="Activity_Delivery_Cost_Lookup_Table">
         <dc:Bounds x="1250" y="150" width="100" height="80" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Activity_0hgpfwr_di" bpmnElement="Activity_Count_Books">
         <dc:Bounds x="1060" y="150" width="100" height="80" />
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Activity_0yqisjt_di" bpmnElement="Activity_Collect_Books">
-        <dc:Bounds x="1930" y="420" width="100" height="80" />
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Activity_00eosr8_di" bpmnElement="Activity_Ship_Books">
-        <dc:Bounds x="2250" y="420" width="100" height="80" />
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Activity_0amveer_di" bpmnElement="Activity_Print_Shipping_Label">
-        <dc:Bounds x="1770" y="420" width="100" height="80" />
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Activity_1nu9y91_di" bpmnElement="Activity_Package_Books">
-        <dc:Bounds x="2090" y="420" width="100" height="80" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Activity_13mbeeo_di" bpmnElement="Activity_0nzrn69">
         <dc:Bounds x="520" y="270" width="100" height="80" />
@@ -356,8 +343,35 @@
           <dc:Bounds x="1276" y="253" width="48" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gateway_1kvsg31_di" bpmnElement="Gateway_1kvsg31" isMarkerVisible="true">
+        <dc:Bounds x="1635" y="165" width="50" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1619" y="143" width="82" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_1nrqagt_di" bpmnElement="Lending_Books_Ended">
+        <dc:Bounds x="2432" y="172" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="2479" y="176" width="82" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_0ld3nau_di" bpmnElement="Activity_Accept_Decline_Order">
+        <dc:Bounds x="1440" y="150" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_0yqisjt_di" bpmnElement="Activity_Collect_Books">
+        <dc:Bounds x="1920" y="420" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_00eosr8_di" bpmnElement="Activity_Ship_Books">
+        <dc:Bounds x="2240" y="420" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_0amveer_di" bpmnElement="Activity_Print_Shipping_Label">
+        <dc:Bounds x="1760" y="420" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_1nu9y91_di" bpmnElement="Activity_Package_Books">
+        <dc:Bounds x="2080" y="420" width="100" height="80" />
+      </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Activity_1q5pocw_di" bpmnElement="Activity_1y1jvss">
-        <dc:Bounds x="1450" y="260" width="100" height="80" />
+        <dc:Bounds x="1440" y="260" width="100" height="80" />
       </bpmndi:BPMNShape>
     </bpmndi:BPMNPlane>
   </bpmndi:BPMNDiagram>

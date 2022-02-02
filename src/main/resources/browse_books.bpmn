@@ -12,10 +12,11 @@
     <bpmn:userTask id="Activity_Review_Selected" name="Review selected books">
       <bpmn:extensionElements>
         <camunda:formData>
-          <camunda:formField id="done" label="Done with browsing books?" type="boolean" />
+          <camunda:formField id="browsingDone" label="Done with browsing books?" type="boolean" />
+          <camunda:formField id="selectedBooks" label="Selected Books (separated by a &#34;;&#34;)" type="string" />
         </camunda:formData>
       </bpmn:extensionElements>
-      <bpmn:incoming>Flow_0tunkj9</bpmn:incoming>
+      <bpmn:incoming>Flow_1nqcuop</bpmn:incoming>
       <bpmn:outgoing>Flow_1e6yj1h</bpmn:outgoing>
     </bpmn:userTask>
     <bpmn:exclusiveGateway id="Gateway_13xqjmo" name="Browsing done?">
@@ -49,6 +50,7 @@
       <bpmn:extensionElements>
         <camunda:formData>
           <camunda:formField id="name" label="Book name" type="string" />
+          <camunda:formField id="error" label="If an error occured, it will be displayed here (pls do not edit, thx)" type="string" />
         </camunda:formData>
       </bpmn:extensionElements>
       <bpmn:incoming>Flow_11zgkaw</bpmn:incoming>
@@ -73,12 +75,23 @@
       <bpmn:outgoing>Flow_0l6r2hi</bpmn:outgoing>
     </bpmn:exclusiveGateway>
     <bpmn:sequenceFlow id="Flow_1fsry3m" sourceRef="Activity_1hk9nxx" targetRef="Gateway_1f4m7dh" />
-    <bpmn:sequenceFlow id="Flow_0tunkj9" name="yes" sourceRef="Gateway_1f4m7dh" targetRef="Activity_Review_Selected">
+    <bpmn:sequenceFlow id="Flow_0tunkj9" name="yes" sourceRef="Gateway_1f4m7dh" targetRef="Activity_1kxqp76">
       <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${borrowing}</bpmn:conditionExpression>
     </bpmn:sequenceFlow>
     <bpmn:sequenceFlow id="Flow_0l6r2hi" name="no" sourceRef="Gateway_1f4m7dh" targetRef="Activity_Search_Books">
       <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${not borrowing}</bpmn:conditionExpression>
     </bpmn:sequenceFlow>
+    <bpmn:serviceTask id="Activity_1kxqp76" name="Update cart" camunda:class="at.fhv.CartService">
+      <bpmn:extensionElements>
+        <camunda:inputOutput>
+          <camunda:inputParameter name="borrowingState">${borrowing}</camunda:inputParameter>
+          <camunda:inputParameter name="selectedBook">${name}</camunda:inputParameter>
+        </camunda:inputOutput>
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_0tunkj9</bpmn:incoming>
+      <bpmn:outgoing>Flow_1nqcuop</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:sequenceFlow id="Flow_1nqcuop" sourceRef="Activity_1kxqp76" targetRef="Activity_Review_Selected" />
   </bpmn:process>
   <bpmndi:BPMNDiagram id="BPMNDiagram_1">
     <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="browse_books">
@@ -93,9 +106,9 @@
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_0tunkj9_di" bpmnElement="Flow_0tunkj9">
         <di:waypoint x="995" y="100" />
-        <di:waypoint x="1080" y="100" />
+        <di:waypoint x="1100" y="100" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="995" y="82" width="17" height="14" />
+          <dc:Bounds x="1017" y="83" width="17" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_1fsry3m_di" bpmnElement="Flow_1fsry3m">
@@ -127,12 +140,12 @@
         <di:waypoint x="645" y="100" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_044fz1t_di" bpmnElement="Flow_044fz1t">
-        <di:waypoint x="1290" y="125" />
-        <di:waypoint x="1290" y="220" />
+        <di:waypoint x="1480" y="125" />
+        <di:waypoint x="1480" y="220" />
         <di:waypoint x="320" y="220" />
         <di:waypoint x="320" y="140" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="1303" y="132" width="13" height="14" />
+          <dc:Bounds x="1493" y="132" width="13" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_11zgkaw_di" bpmnElement="Flow_11zgkaw">
@@ -140,15 +153,19 @@
         <di:waypoint x="300" y="100" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_1e6yj1h_di" bpmnElement="Flow_1e6yj1h">
-        <di:waypoint x="1180" y="100" />
-        <di:waypoint x="1265" y="100" />
+        <di:waypoint x="1390" y="100" />
+        <di:waypoint x="1455" y="100" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_1p9h88a_di" bpmnElement="Flow_1p9h88a">
-        <di:waypoint x="1315" y="100" />
-        <di:waypoint x="1422" y="100" />
+        <di:waypoint x="1505" y="100" />
+        <di:waypoint x="1612" y="100" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="1360" y="82" width="17" height="14" />
+          <dc:Bounds x="1550" y="82" width="17" height="14" />
         </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1nqcuop_di" bpmnElement="Flow_1nqcuop">
+        <di:waypoint x="1200" y="100" />
+        <di:waypoint x="1290" y="100" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNShape id="Event_0v0kqoi_di" bpmnElement="Browsing_Books_Started">
         <dc:Bounds x="172" y="82" width="36" height="36" />
@@ -177,20 +194,23 @@
           <dc:Bounds x="942" y="51" width="56" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Activity_1mg481q_di" bpmnElement="Activity_Review_Selected">
-        <dc:Bounds x="1080" y="60" width="100" height="80" />
-      </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Gateway_13xqjmo_di" bpmnElement="Gateway_13xqjmo" isMarkerVisible="true">
-        <dc:Bounds x="1265" y="75" width="50" height="50" />
+        <dc:Bounds x="1455" y="75" width="50" height="50" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="1250" y="51" width="79" height="14" />
+          <dc:Bounds x="1440" y="51" width="79" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Event_0k8zl42_di" bpmnElement="Browsing_Done">
-        <dc:Bounds x="1422" y="82" width="36" height="36" />
+        <dc:Bounds x="1612" y="82" width="36" height="36" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="1404" y="125" width="73" height="14" />
+          <dc:Bounds x="1594" y="125" width="73" height="14" />
         </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_1s6yyh4_di" bpmnElement="Activity_1kxqp76">
+        <dc:Bounds x="1100" y="60" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_1mg481q_di" bpmnElement="Activity_Review_Selected">
+        <dc:Bounds x="1290" y="60" width="100" height="80" />
       </bpmndi:BPMNShape>
     </bpmndi:BPMNPlane>
   </bpmndi:BPMNDiagram>
