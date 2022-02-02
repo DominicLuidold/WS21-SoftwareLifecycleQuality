@@ -24,7 +24,8 @@ jobs:
     - name: Run Tests
       run: mvn -B test --no-transfer-progress
       
-    - name: Heroku Action
+    - name: Heroku Deployment
+      continue-on-error: true
       uses: CDNievas/heroku-action@v1.0
       with:
         heroku_api_key: ${{secrets.HEROKU_API_KEY}}
