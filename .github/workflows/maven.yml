@@ -23,3 +23,13 @@ jobs:
 
     - name: Run Tests
       run: mvn -B test --no-transfer-progress
+      
+    - name: Heroku Action
+      uses: CDNievas/heroku-action@v1.0
+      with:
+        heroku_api_key: ${{secrets.HEROKU_API_KEY}}
+        heroku_email: ${{secrets.HEROKU_API_EMAIL}}
+        heroku_app_name: library-fhv-itm
+        branch: master
+ 
+
