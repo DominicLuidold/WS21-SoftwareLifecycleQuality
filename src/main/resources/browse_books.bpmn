@@ -19,28 +19,28 @@
       <bpmn:incoming>Flow_1nqcuop</bpmn:incoming>
       <bpmn:outgoing>Flow_1e6yj1h</bpmn:outgoing>
     </bpmn:userTask>
-    <bpmn:exclusiveGateway id="Gateway_13xqjmo" name="Browsing done?">
+    <bpmn:exclusiveGateway id="Gateway_Browsing_Done" name="Browsing done?">
       <bpmn:incoming>Flow_1e6yj1h</bpmn:incoming>
       <bpmn:outgoing>Flow_044fz1t</bpmn:outgoing>
       <bpmn:outgoing>Flow_1p9h88a</bpmn:outgoing>
     </bpmn:exclusiveGateway>
-    <bpmn:sequenceFlow id="Flow_1e6yj1h" sourceRef="Activity_Review_Selected" targetRef="Gateway_13xqjmo" />
-    <bpmn:sequenceFlow id="Flow_044fz1t" name="no" sourceRef="Gateway_13xqjmo" targetRef="Activity_Search_Books">
+    <bpmn:sequenceFlow id="Flow_1e6yj1h" sourceRef="Activity_Review_Selected" targetRef="Gateway_Browsing_Done" />
+    <bpmn:sequenceFlow id="Flow_044fz1t" name="no" sourceRef="Gateway_Browsing_Done" targetRef="Activity_Search_Books">
       <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${not browsingDone}</bpmn:conditionExpression>
     </bpmn:sequenceFlow>
-    <bpmn:exclusiveGateway id="Gateway_0anqinx" name="Book available?">
+    <bpmn:exclusiveGateway id="Gateway_Book_Available" name="Book available?">
       <bpmn:incoming>Flow_1ukfgrj</bpmn:incoming>
       <bpmn:outgoing>Flow_0rd2g7f</bpmn:outgoing>
       <bpmn:outgoing>Flow_0nkkhpu</bpmn:outgoing>
     </bpmn:exclusiveGateway>
-    <bpmn:sequenceFlow id="Flow_1ukfgrj" sourceRef="Activity_Check_Availability" targetRef="Gateway_0anqinx" />
-    <bpmn:sequenceFlow id="Flow_0nkkhpu" name="yes" sourceRef="Gateway_0anqinx" targetRef="Activity_1hk9nxx">
+    <bpmn:sequenceFlow id="Flow_1ukfgrj" sourceRef="Activity_Check_Availability" targetRef="Gateway_Book_Available" />
+    <bpmn:sequenceFlow id="Flow_0nkkhpu" name="yes" sourceRef="Gateway_Book_Available" targetRef="Activity_Borrow_Book_Decider">
       <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${available}</bpmn:conditionExpression>
     </bpmn:sequenceFlow>
-    <bpmn:sequenceFlow id="Flow_0rd2g7f" name="no" sourceRef="Gateway_0anqinx" targetRef="Activity_Search_Books">
+    <bpmn:sequenceFlow id="Flow_0rd2g7f" name="no" sourceRef="Gateway_Book_Available" targetRef="Activity_Search_Books">
       <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${not available}</bpmn:conditionExpression>
     </bpmn:sequenceFlow>
-    <bpmn:sequenceFlow id="Flow_1p9h88a" name="yes" sourceRef="Gateway_13xqjmo" targetRef="Browsing_Done">
+    <bpmn:sequenceFlow id="Flow_1p9h88a" name="yes" sourceRef="Gateway_Browsing_Done" targetRef="Browsing_Done">
       <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${browsingDone}</bpmn:conditionExpression>
     </bpmn:sequenceFlow>
     <bpmn:endEvent id="Browsing_Done" name="Browsing done">
@@ -60,7 +60,7 @@
       <bpmn:outgoing>Flow_08leveq</bpmn:outgoing>
     </bpmn:userTask>
     <bpmn:sequenceFlow id="Flow_08leveq" sourceRef="Activity_Search_Books" targetRef="Activity_Check_Availability" />
-    <bpmn:userTask id="Activity_1hk9nxx" name="Decide wether to borrow book">
+    <bpmn:userTask id="Activity_Borrow_Book_Decider" name="Decide wether to borrow book">
       <bpmn:extensionElements>
         <camunda:formData>
           <camunda:formField id="borrowing" label="Decide to borrow the selected book?" type="boolean" />
@@ -69,19 +69,19 @@
       <bpmn:incoming>Flow_0nkkhpu</bpmn:incoming>
       <bpmn:outgoing>Flow_1fsry3m</bpmn:outgoing>
     </bpmn:userTask>
-    <bpmn:exclusiveGateway id="Gateway_1f4m7dh" name="Borrowing?">
+    <bpmn:exclusiveGateway id="Gateway_Borrowing" name="Borrowing?">
       <bpmn:incoming>Flow_1fsry3m</bpmn:incoming>
       <bpmn:outgoing>Flow_0tunkj9</bpmn:outgoing>
       <bpmn:outgoing>Flow_0l6r2hi</bpmn:outgoing>
     </bpmn:exclusiveGateway>
-    <bpmn:sequenceFlow id="Flow_1fsry3m" sourceRef="Activity_1hk9nxx" targetRef="Gateway_1f4m7dh" />
-    <bpmn:sequenceFlow id="Flow_0tunkj9" name="yes" sourceRef="Gateway_1f4m7dh" targetRef="Activity_1kxqp76">
+    <bpmn:sequenceFlow id="Flow_1fsry3m" sourceRef="Activity_Borrow_Book_Decider" targetRef="Gateway_Borrowing" />
+    <bpmn:sequenceFlow id="Flow_0tunkj9" name="yes" sourceRef="Gateway_Borrowing" targetRef="Activity_Update_Cart">
       <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${borrowing}</bpmn:conditionExpression>
     </bpmn:sequenceFlow>
-    <bpmn:sequenceFlow id="Flow_0l6r2hi" name="no" sourceRef="Gateway_1f4m7dh" targetRef="Activity_Search_Books">
+    <bpmn:sequenceFlow id="Flow_0l6r2hi" name="no" sourceRef="Gateway_Borrowing" targetRef="Activity_Search_Books">
       <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${not borrowing}</bpmn:conditionExpression>
     </bpmn:sequenceFlow>
-    <bpmn:serviceTask id="Activity_1kxqp76" name="Update cart" camunda:class="at.fhv.CartService">
+    <bpmn:serviceTask id="Activity_Update_Cart" name="Update cart" camunda:class="at.fhv.CartService">
       <bpmn:extensionElements>
         <camunda:inputOutput>
           <camunda:inputParameter name="borrowingState">${borrowing}</camunda:inputParameter>
@@ -91,10 +91,14 @@
       <bpmn:incoming>Flow_0tunkj9</bpmn:incoming>
       <bpmn:outgoing>Flow_1nqcuop</bpmn:outgoing>
     </bpmn:serviceTask>
-    <bpmn:sequenceFlow id="Flow_1nqcuop" sourceRef="Activity_1kxqp76" targetRef="Activity_Review_Selected" />
+    <bpmn:sequenceFlow id="Flow_1nqcuop" sourceRef="Activity_Update_Cart" targetRef="Activity_Review_Selected" />
   </bpmn:process>
   <bpmndi:BPMNDiagram id="BPMNDiagram_1">
     <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="browse_books">
+      <bpmndi:BPMNEdge id="Flow_1nqcuop_di" bpmnElement="Flow_1nqcuop">
+        <di:waypoint x="1200" y="100" />
+        <di:waypoint x="1290" y="100" />
+      </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_0l6r2hi_di" bpmnElement="Flow_0l6r2hi">
         <di:waypoint x="970" y="125" />
         <di:waypoint x="970" y="200" />
@@ -118,6 +122,13 @@
       <bpmndi:BPMNEdge id="Flow_08leveq_di" bpmnElement="Flow_08leveq">
         <di:waypoint x="400" y="100" />
         <di:waypoint x="470" y="100" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1p9h88a_di" bpmnElement="Flow_1p9h88a">
+        <di:waypoint x="1505" y="100" />
+        <di:waypoint x="1612" y="100" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1550" y="82" width="17" height="14" />
+        </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_0rd2g7f_di" bpmnElement="Flow_0rd2g7f">
         <di:waypoint x="670" y="125" />
@@ -148,24 +159,13 @@
           <dc:Bounds x="1493" y="132" width="13" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Flow_11zgkaw_di" bpmnElement="Flow_11zgkaw">
-        <di:waypoint x="208" y="100" />
-        <di:waypoint x="300" y="100" />
-      </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_1e6yj1h_di" bpmnElement="Flow_1e6yj1h">
         <di:waypoint x="1390" y="100" />
         <di:waypoint x="1455" y="100" />
       </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Flow_1p9h88a_di" bpmnElement="Flow_1p9h88a">
-        <di:waypoint x="1505" y="100" />
-        <di:waypoint x="1612" y="100" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="1550" y="82" width="17" height="14" />
-        </bpmndi:BPMNLabel>
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Flow_1nqcuop_di" bpmnElement="Flow_1nqcuop">
-        <di:waypoint x="1200" y="100" />
-        <di:waypoint x="1290" y="100" />
+      <bpmndi:BPMNEdge id="Flow_11zgkaw_di" bpmnElement="Flow_11zgkaw">
+        <di:waypoint x="208" y="100" />
+        <di:waypoint x="300" y="100" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNShape id="Event_0v0kqoi_di" bpmnElement="Browsing_Books_Started">
         <dc:Bounds x="172" y="82" width="36" height="36" />
@@ -176,28 +176,19 @@
       <bpmndi:BPMNShape id="Activity_1x0pa8x_di" bpmnElement="Activity_Check_Availability">
         <dc:Bounds x="470" y="60" width="100" height="80" />
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Gateway_0anqinx_di" bpmnElement="Gateway_0anqinx" isMarkerVisible="true">
-        <dc:Bounds x="645" y="75" width="50" height="50" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="631" y="51" width="78" height="14" />
-        </bpmndi:BPMNLabel>
+      <bpmndi:BPMNShape id="Activity_1mg481q_di" bpmnElement="Activity_Review_Selected">
+        <dc:Bounds x="1290" y="60" width="100" height="80" />
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Activity_1692usy_di" bpmnElement="Activity_Search_Books">
-        <dc:Bounds x="300" y="60" width="100" height="80" />
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Activity_0wovve3_di" bpmnElement="Activity_1hk9nxx">
-        <dc:Bounds x="770" y="60" width="100" height="80" />
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Gateway_1f4m7dh_di" bpmnElement="Gateway_1f4m7dh" isMarkerVisible="true">
-        <dc:Bounds x="945" y="75" width="50" height="50" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="942" y="51" width="56" height="14" />
-        </bpmndi:BPMNLabel>
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Gateway_13xqjmo_di" bpmnElement="Gateway_13xqjmo" isMarkerVisible="true">
+      <bpmndi:BPMNShape id="Gateway_13xqjmo_di" bpmnElement="Gateway_Browsing_Done" isMarkerVisible="true">
         <dc:Bounds x="1455" y="75" width="50" height="50" />
         <bpmndi:BPMNLabel>
           <dc:Bounds x="1440" y="51" width="79" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gateway_0anqinx_di" bpmnElement="Gateway_Book_Available" isMarkerVisible="true">
+        <dc:Bounds x="645" y="75" width="50" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="631" y="51" width="78" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Event_0k8zl42_di" bpmnElement="Browsing_Done">
@@ -206,11 +197,20 @@
           <dc:Bounds x="1594" y="125" width="73" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Activity_1s6yyh4_di" bpmnElement="Activity_1kxqp76">
-        <dc:Bounds x="1100" y="60" width="100" height="80" />
+      <bpmndi:BPMNShape id="Activity_1692usy_di" bpmnElement="Activity_Search_Books">
+        <dc:Bounds x="300" y="60" width="100" height="80" />
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Activity_1mg481q_di" bpmnElement="Activity_Review_Selected">
-        <dc:Bounds x="1290" y="60" width="100" height="80" />
+      <bpmndi:BPMNShape id="Activity_0wovve3_di" bpmnElement="Activity_Borrow_Book_Decider">
+        <dc:Bounds x="770" y="60" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gateway_1f4m7dh_di" bpmnElement="Gateway_Borrowing" isMarkerVisible="true">
+        <dc:Bounds x="945" y="75" width="50" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="942" y="51" width="56" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_1s6yyh4_di" bpmnElement="Activity_Update_Cart">
+        <dc:Bounds x="1100" y="60" width="100" height="80" />
       </bpmndi:BPMNShape>
     </bpmndi:BPMNPlane>
   </bpmndi:BPMNDiagram>

@@ -9,14 +9,14 @@
         <bpmn:flowNodeRef>Lending_Books_Started</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>Activity_Enter_Login_Credentials</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>Activity_Check_Login_Credentials</bpmn:flowNodeRef>
-        <bpmn:flowNodeRef>Gateway_1g74ajx</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Gateway_Credentials_Correct</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>Activity_Browse_Books</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>Activity_Delivery_Cost_Lookup_Table</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>Activity_Count_Books</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>Activity_0nzrn69</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>Gateway_1qkyvgw</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>Gateway_1ip0j9h</bpmn:flowNodeRef>
-        <bpmn:flowNodeRef>Gateway_1kvsg31</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Gateway_Order_Accept</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>Lending_Books_Ended</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>Activity_Accept_Decline_Order</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>Activity_1y1jvss</bpmn:flowNodeRef>
@@ -48,16 +48,16 @@
       <bpmn:incoming>Flow_1o38ik1</bpmn:incoming>
       <bpmn:outgoing>Flow_1jzll3b</bpmn:outgoing>
     </bpmn:serviceTask>
-    <bpmn:exclusiveGateway id="Gateway_1g74ajx" name="Login credentials correct?">
+    <bpmn:exclusiveGateway id="Gateway_Credentials_Correct" name="Login credentials correct?">
       <bpmn:incoming>Flow_1jzll3b</bpmn:incoming>
       <bpmn:outgoing>Flow_1h40b9w</bpmn:outgoing>
       <bpmn:outgoing>Flow_0w4ztxt</bpmn:outgoing>
     </bpmn:exclusiveGateway>
-    <bpmn:sequenceFlow id="Flow_1jzll3b" sourceRef="Activity_Check_Login_Credentials" targetRef="Gateway_1g74ajx" />
-    <bpmn:sequenceFlow id="Flow_1h40b9w" name="no" sourceRef="Gateway_1g74ajx" targetRef="Activity_0nzrn69">
+    <bpmn:sequenceFlow id="Flow_1jzll3b" sourceRef="Activity_Check_Login_Credentials" targetRef="Gateway_Credentials_Correct" />
+    <bpmn:sequenceFlow id="Flow_1h40b9w" name="no" sourceRef="Gateway_Credentials_Correct" targetRef="Activity_0nzrn69">
       <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${not credentialsCorrect}</bpmn:conditionExpression>
     </bpmn:sequenceFlow>
-    <bpmn:sequenceFlow id="Flow_0w4ztxt" name="yes" sourceRef="Gateway_1g74ajx" targetRef="Activity_Browse_Books">
+    <bpmn:sequenceFlow id="Flow_0w4ztxt" name="yes" sourceRef="Gateway_Credentials_Correct" targetRef="Activity_Browse_Books">
       <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${credentialsCorrect}</bpmn:conditionExpression>
     </bpmn:sequenceFlow>
     <bpmn:callActivity id="Activity_Browse_Books" name="Browse books" calledElement="browse_books">
@@ -112,7 +112,7 @@
     <bpmn:sequenceFlow id="Flow_0b9hisd" name="no" sourceRef="Gateway_1ip0j9h" targetRef="Lending_Books_Ended">
       <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${not browseAgain}</bpmn:conditionExpression>
     </bpmn:sequenceFlow>
-    <bpmn:exclusiveGateway id="Gateway_1kvsg31" name="Order accepted?">
+    <bpmn:exclusiveGateway id="Gateway_Order_Accept" name="Order accepted?">
       <bpmn:incoming>Flow_0eykz1w</bpmn:incoming>
       <bpmn:outgoing>Flow_0swc87x</bpmn:outgoing>
       <bpmn:outgoing>Flow_1b0gvxl</bpmn:outgoing>
@@ -157,11 +157,11 @@
       <bpmn:incoming>Flow_1b0gvxl</bpmn:incoming>
       <bpmn:outgoing>Flow_13nhsgx</bpmn:outgoing>
     </bpmn:userTask>
-    <bpmn:sequenceFlow id="Flow_0eykz1w" sourceRef="Activity_Accept_Decline_Order" targetRef="Gateway_1kvsg31" />
-    <bpmn:sequenceFlow id="Flow_1b0gvxl" name="no" sourceRef="Gateway_1kvsg31" targetRef="Activity_1y1jvss">
+    <bpmn:sequenceFlow id="Flow_0eykz1w" sourceRef="Activity_Accept_Decline_Order" targetRef="Gateway_Order_Accept" />
+    <bpmn:sequenceFlow id="Flow_1b0gvxl" name="no" sourceRef="Gateway_Order_Accept" targetRef="Activity_1y1jvss">
       <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${not orderAccepted}</bpmn:conditionExpression>
     </bpmn:sequenceFlow>
-    <bpmn:sequenceFlow id="Flow_0swc87x" name="yes" sourceRef="Gateway_1kvsg31" targetRef="Activity_Print_Shipping_Label">
+    <bpmn:sequenceFlow id="Flow_0swc87x" name="yes" sourceRef="Gateway_Order_Accept" targetRef="Activity_Print_Shipping_Label">
       <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${orderAccepted}</bpmn:conditionExpression>
     </bpmn:sequenceFlow>
     <bpmn:sequenceFlow id="Flow_0i2deq3" sourceRef="Activity_Ship_Books" targetRef="Lending_Books_Ended" />
@@ -180,6 +180,44 @@
       <bpmndi:BPMNShape id="Lane_04rf0z1_di" bpmnElement="Lane_04rf0z1" isHorizontal="true">
         <dc:Bounds x="159" y="110" width="2441" height="280" />
       </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="Flow_114vmng_di" bpmnElement="Flow_114vmng">
+        <di:waypoint x="2180" y="460" />
+        <di:waypoint x="2240" y="460" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_19w3oo6_di" bpmnElement="Flow_19w3oo6">
+        <di:waypoint x="2020" y="460" />
+        <di:waypoint x="2080" y="460" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1o4nant_di" bpmnElement="Flow_1o4nant">
+        <di:waypoint x="1860" y="460" />
+        <di:waypoint x="1920" y="460" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0i2deq3_di" bpmnElement="Flow_0i2deq3">
+        <di:waypoint x="2340" y="460" />
+        <di:waypoint x="2450" y="460" />
+        <di:waypoint x="2450" y="208" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0swc87x_di" bpmnElement="Flow_0swc87x">
+        <di:waypoint x="1685" y="190" />
+        <di:waypoint x="1710" y="190" />
+        <di:waypoint x="1710" y="460" />
+        <di:waypoint x="1760" y="460" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1691" y="172" width="17" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1b0gvxl_di" bpmnElement="Flow_1b0gvxl">
+        <di:waypoint x="1660" y="215" />
+        <di:waypoint x="1660" y="300" />
+        <di:waypoint x="1540" y="300" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1673" y="221" width="13" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0eykz1w_di" bpmnElement="Flow_0eykz1w">
+        <di:waypoint x="1540" y="190" />
+        <di:waypoint x="1635" y="190" />
+      </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_0b9hisd_di" bpmnElement="Flow_0b9hisd">
         <di:waypoint x="1300" y="325" />
         <di:waypoint x="1300" y="350" />
@@ -263,44 +301,6 @@
         <di:waypoint x="248" y="190" />
         <di:waypoint x="330" y="190" />
       </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Flow_0eykz1w_di" bpmnElement="Flow_0eykz1w">
-        <di:waypoint x="1540" y="190" />
-        <di:waypoint x="1635" y="190" />
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Flow_1b0gvxl_di" bpmnElement="Flow_1b0gvxl">
-        <di:waypoint x="1660" y="215" />
-        <di:waypoint x="1660" y="300" />
-        <di:waypoint x="1540" y="300" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="1673" y="221" width="13" height="14" />
-        </bpmndi:BPMNLabel>
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Flow_0swc87x_di" bpmnElement="Flow_0swc87x">
-        <di:waypoint x="1685" y="190" />
-        <di:waypoint x="1710" y="190" />
-        <di:waypoint x="1710" y="460" />
-        <di:waypoint x="1760" y="460" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="1691" y="172" width="17" height="14" />
-        </bpmndi:BPMNLabel>
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Flow_0i2deq3_di" bpmnElement="Flow_0i2deq3">
-        <di:waypoint x="2340" y="460" />
-        <di:waypoint x="2450" y="460" />
-        <di:waypoint x="2450" y="208" />
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Flow_1o4nant_di" bpmnElement="Flow_1o4nant">
-        <di:waypoint x="1860" y="460" />
-        <di:waypoint x="1920" y="460" />
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Flow_19w3oo6_di" bpmnElement="Flow_19w3oo6">
-        <di:waypoint x="2020" y="460" />
-        <di:waypoint x="2080" y="460" />
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Flow_114vmng_di" bpmnElement="Flow_114vmng">
-        <di:waypoint x="2180" y="460" />
-        <di:waypoint x="2240" y="460" />
-      </bpmndi:BPMNEdge>
       <bpmndi:BPMNShape id="_BPMNShape_StartEvent_2" bpmnElement="Lending_Books_Started">
         <dc:Bounds x="212" y="172" width="36" height="36" />
         <bpmndi:BPMNLabel>
@@ -313,7 +313,7 @@
       <bpmndi:BPMNShape id="Activity_0iq8g97_di" bpmnElement="Activity_Check_Login_Credentials">
         <dc:Bounds x="520" y="150" width="100" height="80" />
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Gateway_1g74ajx_di" bpmnElement="Gateway_1g74ajx" isMarkerVisible="true">
+      <bpmndi:BPMNShape id="Gateway_1g74ajx_di" bpmnElement="Gateway_Credentials_Correct" isMarkerVisible="true">
         <dc:Bounds x="715" y="165" width="50" height="50" />
         <bpmndi:BPMNLabel>
           <dc:Bounds x="698" y="136" width="84" height="27" />
@@ -343,7 +343,7 @@
           <dc:Bounds x="1276" y="253" width="48" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Gateway_1kvsg31_di" bpmnElement="Gateway_1kvsg31" isMarkerVisible="true">
+      <bpmndi:BPMNShape id="Gateway_1kvsg31_di" bpmnElement="Gateway_Order_Accept" isMarkerVisible="true">
         <dc:Bounds x="1635" y="165" width="50" height="50" />
         <bpmndi:BPMNLabel>
           <dc:Bounds x="1619" y="143" width="82" height="14" />
