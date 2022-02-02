@@ -19,7 +19,7 @@ jobs:
         cache: maven
 
     - name: Run Checkstyle
-      run: mvn site
+      run: mvn -B site --no-transfer-progress
 
     - name: Run Tests
-      run: mvn test
+      run: mvn -B test --no-transfer-progress
