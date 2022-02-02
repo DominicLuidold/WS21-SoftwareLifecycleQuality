@@ -1,8 +1,9 @@
 package at.fhv;
 
-import java.util.HashMap;
 import org.camunda.bpm.engine.delegate.DelegateExecution;
 import org.camunda.bpm.engine.delegate.JavaDelegate;
+
+import java.util.HashMap;
 
 public class BookAvailabilityService implements JavaDelegate {
     private final HashMap<String, Integer> books = new HashMap<>();
@@ -22,14 +23,16 @@ public class BookAvailabilityService implements JavaDelegate {
         if (doesBookExist(bookName)) {
             if (isBookAvailable(bookName)) {
                 delegateExecution.setVariable("available", true);
-            } else {
+            }
+            else {
                 delegateExecution
-                    .setVariable("error", "There is not enough stock left of this book! :(");
+                        .setVariable("error", "There is not enough stock left of this book! :(");
                 delegateExecution.setVariable("available", false);
             }
-        } else {
+        }
+        else {
             delegateExecution
-                .setVariable("error", "The book with title '" + bookName + "' does not exist.. :(");
+                    .setVariable("error", "The book with title '" + bookName + "' does not exist.. :(");
             delegateExecution.setVariable("available", false);
         }
     }

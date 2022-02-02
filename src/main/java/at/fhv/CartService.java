@@ -1,9 +1,10 @@
 package at.fhv;
 
-import java.util.ArrayList;
-import java.util.List;
 import org.camunda.bpm.engine.delegate.DelegateExecution;
 import org.camunda.bpm.engine.delegate.JavaDelegate;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class CartService implements JavaDelegate {
 
@@ -16,7 +17,8 @@ public class CartService implements JavaDelegate {
         List<String> booksInCart;
         if (delegateExecution.hasVariable("booksInCart")) {
             booksInCart = (ArrayList<String>) delegateExecution.getVariable("booksInCart");
-        } else {
+        }
+        else {
             booksInCart = new ArrayList<>();
         }
 

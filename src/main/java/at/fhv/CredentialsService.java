@@ -1,8 +1,9 @@
 package at.fhv;
 
-import java.util.HashMap;
 import org.camunda.bpm.engine.delegate.DelegateExecution;
 import org.camunda.bpm.engine.delegate.JavaDelegate;
+
+import java.util.HashMap;
 
 public final class CredentialsService implements JavaDelegate {
     private final HashMap<String, String> credentials = new HashMap<>();
